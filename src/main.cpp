@@ -97,6 +97,7 @@ void add_path(string path, bool first, bool user_only)
     {
         environment_hkey = PC_ENV_HKEY;
         environment_path = PC_ENV_PATH;
+        verify_privileges();
     }
     else
     {
@@ -108,6 +109,7 @@ void add_path(string path, bool first, bool user_only)
     // Open key
     HKEY environment_key;
     RegOpenKeyEx(environment_hkey, environment_path, 0, KEY_READ | KEY_WRITE | KEY_QUERY_VALUE, &environment_key);
+    report_error();
 
     // Get current path and write to buffer
     DWORD old_path_size;
@@ -115,6 +117,7 @@ void add_path(string path, bool first, bool user_only)
     RegQueryValueExW(environment_key, L"PATH", NULL, NULL, NULL, &old_path_size);
     old_path = (WCHAR *)new char[old_path_size + 1]; // Make room for null-byte
     RegQueryValueExW(environment_key, L"PATH", NULL, NULL, (LPBYTE)old_path, &old_path_size);
+    report_error();
 
     // Append new path to buffer
     wstring path_w = converter.from_bytes(path);
@@ -123,6 +126,7 @@ void add_path(string path, bool first, bool user_only)
 
     // Write new path to registry
     RegSetValueExW(environment_key, L"PATH", NULL, REG_EXPAND_SZ, (LPBYTE)new_path_buf, new_path.size() * sizeof(wchar_t) + 1);
+    report_error();
 
     RegCloseKey(environment_key);
 }
