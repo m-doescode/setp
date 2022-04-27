@@ -11,6 +11,12 @@ using std::cerr;
 using std::cout;
 using std::endl;
 
+const WCHAR *PC_ENV_PATH = L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+const WCHAR *USER_ENV_PATH = L"Environment";
+
+const HKEY PC_ENV_HKEY = HKEY_LOCAL_MACHINE;
+const HKEY USER_ENV_HKEY = HKEY_CURRENT_USER;
+
 CLI::App app;
 
 // CLI arguments
@@ -22,10 +28,8 @@ bool f_remove = false;
 void report_error();
 void verify_privileges();
 
-void add_path_user(string path, bool first = false);
-// void add_path_pc(string path, bool first = false);
-// void remove_path_user(string path);
-// void remove_path_pc(string path);
+void add_path(string path, bool first = false, bool user_only = false);
+// void remove_path(string path);
 
 int main(int argc, char **argv)
 {
@@ -37,14 +41,11 @@ int main(int argc, char **argv)
     CLI11_PARSE(app, argc, argv);
 
     if (!f_remove)
-        if (f_user_only)
-            add_path_user(o_path, f_first);
-    //     else
-    //         add_path_pc(o_path, f_first);
+        add_path(o_path, f_first, f_user_only);
     // else if (f_user_only)
-    //     remove_path_user(o_path);
+    //     remove_path(o_path);
     // else
-    //     remove_path_pc(o_path);
+    //     remove_path(o_path);
 
     return 0;
 }
@@ -88,18 +89,31 @@ void verify_privileges()
     }
 }
 
-void add_path_user(string path, bool first)
+void add_path(string path, bool first, bool user_only)
 {
+    HKEY environment_hkey;
+    const WCHAR *environment_path;
+    if (!user_only)
+    {
+        environment_hkey = PC_ENV_HKEY;
+        environment_path = PC_ENV_PATH;
+    }
+    else
+    {
+        environment_hkey = USER_ENV_HKEY;
+        environment_path = USER_ENV_PATH;
+    }
+
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     // Open key
     HKEY environment_key;
-    RegOpenKeyEx(HKEY_CURRENT_USER, L"Test", 0, KEY_READ | KEY_WRITE | KEY_QUERY_VALUE, &environment_key);
+    RegOpenKeyEx(environment_hkey, environment_path, 0, KEY_READ | KEY_WRITE | KEY_QUERY_VALUE, &environment_key);
 
     // Get current path and write to buffer
     DWORD old_path_size;
     WCHAR *old_path;
     RegQueryValueExW(environment_key, L"PATH", NULL, NULL, NULL, &old_path_size);
-    old_path = (WCHAR*)new char[old_path_size + 1]; // Make room for null-byte
+    old_path = (WCHAR *)new char[old_path_size + 1]; // Make room for null-byte
     RegQueryValueExW(environment_key, L"PATH", NULL, NULL, (LPBYTE)old_path, &old_path_size);
 
     // Append new path to buffer
