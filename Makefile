@@ -20,6 +20,9 @@ all: $(BUILDDIR)/$(EXENAME)
 test: all
 	$(BUILDDIR)/$(EXENAME)
 
+clean:
+	@rm -r $(OBJDIR)/**
+
 $(BUILDDIR)/$(EXENAME): $(OBJS)
 	@mkdir -p $(BUILDDIR)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@
