@@ -54,7 +54,7 @@ void add_path(string path, bool first, bool user_only)
 
     // Append new path to buffer
     wstring path_w = converter.from_bytes(path);
-    wstring new_path = first ? path_w + L";" + old_path : (wstring)old_path + L";" + path_w;
+    wstring new_path = first ? path_w + old_path + L";" : (wstring)old_path + path_w + L";";
     const WCHAR *new_path_buf = new_path.c_str();
 
     // Write new path to registry
