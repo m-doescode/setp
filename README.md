@@ -25,10 +25,11 @@ Download the latest Set-P binary for your architecture (32-bit or x64) at [relea
 
 ### Prerequisites
 1. You must have MYS2 MinGW-w64 installed. You may install it from [msys2.org/#installation](https://www.msys2.org/#installation)
-2. You must add `C:\msys64\usr\bin` to path, or wherever your MSYS2 installation is located. (I know, ironic, right?)
+2. You must add `C:\msys64\mingw64\bin` to path, or wherever your MSYS2 installation is located. (I know, ironic, right?)
 3. You must have the following packages installed: (You can install a package by using pacman -S <package_name>:
 	- make
-	- clang
+	- mingw-w64-x86_64-clang
+	- lld
 ### Building
 1. Open the downloaded source
 2. Run `make` (You may add `-r` or `-j16` to increase speed)
