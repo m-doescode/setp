@@ -94,6 +94,9 @@ wstring vector_to_path(vector<wstring> path_vector)
 
 void setp::path_operations::add_path(std::wstring path, path_location_t location, path_position_t position)
 {
+    if (location == path_location_t::COMPUTER)
+        verify_privileges();
+
     HKEY env_root_key;
     wstring env_path;
 
