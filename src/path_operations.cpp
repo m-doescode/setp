@@ -90,9 +90,7 @@ wstring vector_to_path(vector<wstring> path_vector)
 
 //
 
-// Impl
-
-void setp::path_operations::add_path(std::wstring path, path_location_t location, path_position_t position)
+void open_env_key(path_location_t location, HKEY& env_key_out)
 {
     if (location == path_location_t::COMPUTER)
         verify_privileges();
@@ -117,6 +115,11 @@ void setp::path_operations::add_path(std::wstring path, path_location_t location
     RegOpenKeyEx(env_root_key, env_path.c_str(), 0, KEY_READ | KEY_WRITE | KEY_QUERY_VALUE, &env_key);
     report_error();
 
+    env_key_out = env_key;
+}
+
+void read_env_path(HKEY env_key, wstring& out)
+{
     // Get current path and write to buffer
     DWORD old_path_size;
     WCHAR *old_path;
@@ -124,6 +127,28 @@ void setp::path_operations::add_path(std::wstring path, path_location_t location
     old_path = (WCHAR *)new char[old_path_size + 1]; // Make room for null-byte
     RegQueryValueExW(env_key, L"PATH", NULL, NULL, (LPBYTE)old_path, &old_path_size);
     report_error();
+
+    out = old_path;
+}
+
+void write_env_path(HKEY env_key, wstring final_path)
+{
+    // Write path
+    RegSetValueExW(env_key, L"PATH", NULL, REG_EXPAND_SZ, (LPBYTE)final_path.c_str(), final_path.size() * sizeof(wchar_t) + 1);
+    report_error();
+}
+
+// Impl
+
+void setp::path_operations::add_path(std::wstring path, path_location_t location, path_position_t position)
+{
+    // Open key
+    HKEY env_key;
+    open_env_key(location, env_key);
+
+    // Get current path and write to buffer
+    wstring old_path;
+    read_env_path(env_key, old_path);
 
     // Convert to vector
     vector<wstring> path_vector = path_to_vector(old_path);
@@ -142,8 +167,7 @@ void setp::path_operations::add_path(std::wstring path, path_location_t location
     wstring final_path = vector_to_path(path_vector);
 
     // Write path
-    RegSetValueExW(env_key, L"PATH", NULL, REG_EXPAND_SZ, (LPBYTE)final_path.c_str(), final_path.size() * sizeof(wchar_t) + 1);
-    report_error();
+    write_env_path(env_key, final_path);
 
     // Close key
     RegCloseKey(env_key);
@@ -154,7 +178,7 @@ void setp::path_operations::add_path(std::wstring path, path_location_t location
 
 void setp::path_operations::remove_path(std::wstring path, path_location_t location)
 {
-
+    
 }
 
 void setp::path_operations::install_self() {
