@@ -30,6 +30,8 @@ Download the latest Set-P binary for your architecture (32-bit or x64) at [relea
 	- make
 	- mingw-w64-x86_64-clang
 	- lld
+(Protip: You can also use `pacman -S make mingw-w64-x86_64-clang lld`)
+
 ### Building
 1. Open the downloaded source
 2. Run `make` (You may add `-r` or `-j16` to increase speed)
