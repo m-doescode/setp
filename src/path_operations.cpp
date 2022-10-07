@@ -142,7 +142,8 @@ void setp::path_operations::add_path(std::wstring path, path_location_t location
     wstring final_path = vector_to_path(path_vector);
 
     // Write path
-    wcout << L"TEST MODE: " << final_path << endl;
+    RegSetValueExW(env_key, L"PATH", NULL, REG_EXPAND_SZ, (LPBYTE)final_path.c_str(), final_path.size() * sizeof(wchar_t) + 1);
+    report_error();
 
     // Close key
     RegCloseKey(env_key);
