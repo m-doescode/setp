@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <pathcch.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -176,9 +177,53 @@ void setp::path_operations::add_path(std::wstring path, path_location_t location
     wcout << L"Successfully added \"" << path << L"\" to PATH of " << loc_to_str(location) << " " << pos_to_str(position) << endl;
 }
 
-void setp::path_operations::remove_path(std::wstring path, path_location_t location)
+void setp::path_operations::remove_path(std::wstring path_in, path_location_t location)
 {
-    
+    // Open key
+    HKEY env_key;
+    open_env_key(location, env_key);
+
+    // Get current path and write to buffer
+    wstring old_path;
+    read_env_path(env_key, old_path);
+
+    // Convert to vector
+    vector<wstring> path_vector = path_to_vector(old_path);
+
+    // Try to remove path
+    WCHAR canon_path[MAX_PATH];
+    PathCchCanonicalize(canon_path, MAX_PATH, path_in.c_str());
+
+    for (vector<wstring>::iterator it = path_vector.begin() ; it != path_vector.end(); ++it) {
+        WCHAR curr_path[MAX_PATH];
+        PathCchCanonicalize(curr_path, MAX_PATH, (*it).c_str());
+
+        if (wcscmp(canon_path, curr_path) == 0)
+        {
+            // Remove path
+            path_vector.erase(it);
+            goto cont;
+        }
+    }
+
+    // If none are found
+    wcout << L"No such path could be found in " << loc_to_str(location) << endl;
+
+    return;
+
+    cont:
+
+    // Convert to wstring
+    wstring final_path = vector_to_path(path_vector);
+
+    // Write path
+    write_env_path(env_key, final_path);
+
+    // Close key
+    RegCloseKey(env_key);
+
+    // Report success
+    wcout << L"Successfully removed \"" << canon_path << L"\" from PATH of " << loc_to_str(location) << endl;
 }
 
 void setp::path_operations::install_self() {
