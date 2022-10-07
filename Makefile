@@ -3,7 +3,7 @@ CXX = clang++
 LIBS = 
 INCLUDES = include
 MACROS = UNICODE
-CXXFLAGS = -static-libgcc -static-libstdc++ -std=c++2b -Wall -Wextra -fexceptions -fuse-ld=lld $(addprefix -l,$(LIBS)) $(addprefix -I,$(INCLUDES)) $(addprefix -D,$(MACROS))
+CXXFLAGS = -static-libgcc --std=c++2b -Wall -Wextra -fexceptions -fuse-ld=lld $(addprefix -l,$(LIBS)) $(addprefix -I,$(INCLUDES)) $(addprefix -D,$(MACROS))
 LDFLAGS = -lm
 
 SRCDIR = src

@@ -1,0 +1,5 @@
+setp works on relative files. If a relative file is found, then it is used instead
+setp -r removes absolute files
+
+setp -i adds itself to the path
+
