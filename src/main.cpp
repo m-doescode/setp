@@ -18,13 +18,16 @@ string o_path;
 bool f_user_only = false;
 bool f_first = false;
 bool f_remove = false;
+bool f_selfinstall = false;
 
 int main(int argc, char **argv)
 {
-    app.add_option("path", o_path, "The path to be added to the PATH environment variable")->required()->type_name("PATH");
+    app.description("Add a path to the PATH environment variable. Requires administrator privileges. If you do not have administrator access, you may use the -u flag to add it to the user environment instead.");
+    app.add_option("path", o_path, "The path to be added to the PATH environment variable. Use quotation marks for paths with spaces")->required()->type_name("PATH");
     app.add_flag("-u,--user", f_user_only, "Adds the path to the user only, instead of on the Local PC");
-    auto first_flag = app.add_flag("-f,--first", f_first, "Adds the path to the beginning of the PATH environment variable");
-    app.add_flag("-r,--remove", f_remove, "Removes the specified path from the PATH environment variable")->excludes(first_flag);
+    app.add_flag("-f,--first", f_first, "Adds the path to the beginning of the PATH");
+    app.add_flag("-r,--remove", f_remove, "Removes the specified path from the PATH");
+    app.add_flag("-i,--install", f_selfinstall, "Installs the location of the setp binary and adds it to PATH");
 
     CLI11_PARSE(app, argc, argv);
 
