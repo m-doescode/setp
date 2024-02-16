@@ -56,6 +56,9 @@ struct ModifyArgs {
     #[arg(long="system", short='s', help="Modifies global/system environment variables instead of the local user's.")]
     system: bool,
 
+    #[arg(long="preview", short='v', help="Prints out a peview of how the path would be changed instead of modifying them. Useful for testing.")]
+    preview: bool,
+
     paths: Vec<String>,
 }
 
@@ -63,7 +66,7 @@ fn main() {
     let args = Cli::parse();
 
     match args.command {
-        Commands::Add { .. } => unimplemented!(),
+        Commands::Add { prepend, resolve, args: ModifyArgs { system, preview, paths } } => commands::add(prepend, resolve, if system { util::Location::System } else { util::Location::Local }, preview, paths),
         Commands::Remove(_) => unimplemented!(),
         Commands::List { quiet, system, local } => commands::list(quiet, if system { commands::ListFrom::System } else if local { commands::ListFrom::Local } else { commands::ListFrom::Merged }),
     }

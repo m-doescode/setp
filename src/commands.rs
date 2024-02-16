@@ -1,4 +1,6 @@
-use crate::util::{ Location, load_path_key };
+use crate::util::{ load_path_key, save_path_key, Location };
+
+use dunce;
 
 pub enum ListFrom {
     Merged,
@@ -33,5 +35,31 @@ pub fn list(quiet: bool, location: ListFrom) {
 
     for entry in paths {
         println!("{}", entry);
+    }
+}
+
+pub fn add(prepend: bool, resolve: bool, location: Location, preview: bool, paths: Vec<String>) {
+    let current_paths: Vec<String> = load_path_key(&location);
+
+    let mut new_paths: Vec<String> = vec![];
+
+    let resolved_paths = if !resolve { paths } else {
+        paths.into_iter().map(|path| dunce::canonicalize(path).unwrap().to_str().unwrap().to_owned()).collect()
+    };
+
+    if !prepend {
+        new_paths.extend(current_paths);
+        new_paths.extend(resolved_paths);
+    } else {
+        new_paths.extend(resolved_paths);
+        new_paths.extend(current_paths);
+    }
+
+    if preview {
+        for entry in new_paths {
+            println!("{}", entry);
+        }
+    } else {
+        save_path_key(&location, &new_paths);
     }
 }
