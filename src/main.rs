@@ -1,5 +1,8 @@
 use clap::{ Parser, Subcommand, Args };
 
+mod util;
+mod commands;
+
 #[derive(Parser, Debug)]
 #[command(version, about = "The setp utility allows you to add or remove paths from the global PATH environment variable on \
 a Windows system. Paths can be added to the end or to the front and can be added either to the system environment variable with the -s \
@@ -57,5 +60,11 @@ struct ModifyArgs {
 }
 
 fn main() {
-    let _args = Cli::parse();
+    let args = Cli::parse();
+
+    match args.command {
+        Commands::Add { .. } => unimplemented!(),
+        Commands::Remove(_) => unimplemented!(),
+        Commands::List { quiet, system, local: _ } => commands::list(quiet, if system { util::Location::System } else { util::Location::Local }),
+    }
 }
