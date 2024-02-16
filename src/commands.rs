@@ -67,3 +67,30 @@ pub fn add(prepend: bool, resolve: bool, location: Location, preview: bool, path
         println!("Added {} entries", num_updated);
     }
 }
+
+pub fn remove(resolve: bool, location: Location, preview: bool, paths: Vec<String>) {
+    let num_updated: &usize = &paths.len();
+
+    let current_paths: Vec<String> = load_path_key(&location);
+
+    let resolved_paths = if !resolve { paths } else {
+        paths.into_iter().map(|path| dunce::canonicalize(path).unwrap().to_str().unwrap().to_owned()).collect()
+    };
+
+    let mut new_paths = current_paths.clone();
+
+    for path in resolved_paths {
+        let index = new_paths.iter().position(|x| x == &path).unwrap_or_else(|| panic!("Could not find path to remove from environment variable: \"{}\"", path));
+        new_paths.remove(index);
+    }
+
+    if preview {
+        for entry in new_paths {
+            println!("{}", entry);
+        }
+    } else {
+        save_path_key(&location, &new_paths);
+
+        println!("Removed {} entries", num_updated);
+    }
+}

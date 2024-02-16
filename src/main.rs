@@ -24,9 +24,6 @@ enum Commands {
         #[arg(long="prepend", short='p', help="Prepends paths to the beginning of the variable instead of at the end.")]
         prepend: bool,
 
-        #[arg(long="resolve", short='r', help="Resolves absolute or relative paths based on the current directory. Will throw an error if the path is invalid.")]
-        resolve: bool,
-
         #[command(flatten)]
         args: ModifyArgs,
     },
@@ -56,6 +53,9 @@ struct ModifyArgs {
     #[arg(long="system", short='s', help="Modifies global/system environment variables instead of the local user's.")]
     system: bool,
 
+    #[arg(long="resolve", short='r', help="Resolves absolute or relative paths based on the current directory. Will throw an error if the path is invalid.")]
+    resolve: bool,
+
     #[arg(long="preview", short='v', help="Prints out a peview of how the path would be changed instead of modifying them. Useful for testing.")]
     preview: bool,
 
@@ -66,8 +66,8 @@ fn main() {
     let args = Cli::parse();
 
     match args.command {
-        Commands::Add { prepend, resolve, args: ModifyArgs { system, preview, paths } } => commands::add(prepend, resolve, if system { util::Location::System } else { util::Location::Local }, preview, paths),
-        Commands::Remove(_) => unimplemented!(),
+        Commands::Add { prepend, args: ModifyArgs { system, resolve, preview, paths } } => commands::add(prepend, resolve, if system { util::Location::System } else { util::Location::Local }, preview, paths),
+        Commands::Remove(ModifyArgs { system, resolve, preview, paths }) => commands::remove(resolve, if system { util::Location::System } else { util::Location::Local }, preview, paths),
         Commands::List { quiet, system, local } => commands::list(quiet, if system { commands::ListFrom::System } else if local { commands::ListFrom::Local } else { commands::ListFrom::Merged }),
     }
 }
