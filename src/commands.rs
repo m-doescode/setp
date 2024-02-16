@@ -39,6 +39,8 @@ pub fn list(quiet: bool, location: ListFrom) {
 }
 
 pub fn add(prepend: bool, resolve: bool, location: Location, preview: bool, paths: Vec<String>) {
+    let num_updated: &usize = &paths.len();
+
     let current_paths: Vec<String> = load_path_key(&location);
 
     let mut new_paths: Vec<String> = vec![];
@@ -61,5 +63,7 @@ pub fn add(prepend: bool, resolve: bool, location: Location, preview: bool, path
         }
     } else {
         save_path_key(&location, &new_paths);
+
+        println!("Added {} entries", num_updated);
     }
 }
