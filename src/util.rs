@@ -6,7 +6,7 @@ pub enum Location {
     Local,
 }
 
-pub fn load_path_key(location: Location) -> Vec<String> {
+pub fn load_path_key(location: &Location) -> Vec<String> {
     let environment_key = match location {
         Location::Local => RegKey::predef(HKEY_CURRENT_USER).open_subkey(r"Environment").expect("Unable to open local user key."),
         Location::System => RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment").expect("Unable to open system environment key."),
@@ -17,7 +17,7 @@ pub fn load_path_key(location: Location) -> Vec<String> {
     return path_string.split_terminator(';').map(|s| s.to_owned()).collect();
 }
 
-pub fn save_path_key(location: Location, paths: Vec<String>) {
+pub fn save_path_key(location: &Location, paths: &Vec<String>) {
     let environment_key = match location {
         Location::Local => RegKey::predef(HKEY_CURRENT_USER).open_subkey_with_flags(r"Environment", KEY_WRITE).expect("Unable to open local user key."),
         Location::System => RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey_with_flags(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment", KEY_WRITE).expect("Unable to open system environment key."),

@@ -11,14 +11,14 @@ pub fn list(quiet: bool, location: ListFrom) {
 
     match location {
         ListFrom::System => {
-            paths.append(&mut load_path_key(Location::System));
+            paths.extend(load_path_key(&Location::System));
         }
         ListFrom::Local => {
-            paths.append(&mut load_path_key(Location::Local));
+            paths.extend(load_path_key(&Location::Local));
         }
         ListFrom::Merged => {
-            paths.append(&mut load_path_key(Location::System));
-            paths.append(&mut load_path_key(Location::Local));
+            paths.extend(load_path_key(&Location::System));
+            paths.extend(load_path_key(&Location::Local));
         }
     }
 
