@@ -65,6 +65,6 @@ fn main() {
     match args.command {
         Commands::Add { .. } => unimplemented!(),
         Commands::Remove(_) => unimplemented!(),
-        Commands::List { quiet, system, local: _ } => commands::list(quiet, if system { util::Location::System } else { util::Location::Local }),
+        Commands::List { quiet, system, local } => commands::list(quiet, if system { commands::ListFrom::System } else if local { commands::ListFrom::Local } else { commands::ListFrom::Merged }),
     }
 }
