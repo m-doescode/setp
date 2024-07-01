@@ -1,5 +1,3 @@
-use std::thread::panicking;
-
 use winreg::RegKey;
 use winreg::enums::{HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, KEY_WRITE};
 use is_elevated::is_elevated;

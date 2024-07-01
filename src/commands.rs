@@ -1,11 +1,16 @@
 use crate::util::{ load_path_key, save_path_key, Location };
 
-use dunce;
-
 pub enum ListFrom {
     Merged,
     System,
     Local,
+}
+
+pub enum Modification {
+    Add {
+        prepend: bool
+    },
+    Remove
 }
 
 pub fn list(quiet: bool, location: ListFrom) {
@@ -38,24 +43,33 @@ pub fn list(quiet: bool, location: ListFrom) {
     }
 }
 
-pub fn add(prepend: bool, resolve: bool, location: Location, preview: bool, paths: Vec<String>) {
-    let num_updated: &usize = &paths.len();
-
+pub fn modify(modification: Modification, resolve: bool, location: Location, preview: bool, paths: Vec<String>) {
     let current_paths: Vec<String> = load_path_key(&location);
 
-    let mut new_paths: Vec<String> = vec![];
-
-    let resolved_paths = if !resolve { paths } else {
-        paths.into_iter().map(|path| dunce::canonicalize(path).unwrap().to_str().unwrap().to_owned()).collect()
+    // Resolve the paths if requests
+    let paths = if !resolve { paths } else {
+        paths.into_iter().map(|path| dunce::canonicalize(path).expect("Path could not be found.").to_str().unwrap().to_owned()).collect()
     };
 
-    if !prepend {
-        new_paths.extend(current_paths);
-        new_paths.extend(resolved_paths);
-    } else {
-        new_paths.extend(resolved_paths);
-        new_paths.extend(current_paths);
-    }
+    // Process paths
+    let new_paths: Vec<String> = match modification {
+        Modification::Add { prepend } => {
+            if !prepend {
+                current_paths.iter().chain(paths.iter()).cloned().collect()
+            } else {
+                paths.iter().chain(current_paths.iter()).cloned().collect()
+            }
+        },
+        Modification::Remove => {
+            current_paths.iter().filter(|x| {
+                if let Result::Ok(x_canon) = dunce::canonicalize(x) {
+                    return !paths.contains(&x_canon.to_str().unwrap().to_owned())
+                }
+
+                true
+            }).cloned().collect()
+        }
+    };
 
     if preview {
         for entry in new_paths {
@@ -64,33 +78,15 @@ pub fn add(prepend: bool, resolve: bool, location: Location, preview: bool, path
     } else {
         save_path_key(&location, &new_paths);
 
-        println!("Added {} entries", num_updated);
-    }
-}
+        let num_updated = usize::abs_diff(paths.len(), new_paths.len());
 
-pub fn remove(resolve: bool, location: Location, preview: bool, paths: Vec<String>) {
-    let num_updated: &usize = &paths.len();
-
-    let current_paths: Vec<String> = load_path_key(&location);
-
-    let resolved_paths = if !resolve { paths } else {
-        paths.into_iter().map(|path| dunce::canonicalize(path).unwrap().to_str().unwrap().to_owned()).collect()
-    };
-
-    let mut new_paths = current_paths.clone();
-
-    for path in resolved_paths {
-        let index = new_paths.iter().position(|x| x == &path).unwrap_or_else(|| panic!("Could not find path to remove from environment variable: \"{}\"", path));
-        new_paths.remove(index);
-    }
-
-    if preview {
-        for entry in new_paths {
-            println!("{}", entry);
+        match modification {
+            Modification::Add { .. } => {
+                println!("Added {} entries", num_updated);
+            },
+            Modification::Remove => {
+                println!("Removed {} entries", num_updated);
+            }
         }
-    } else {
-        save_path_key(&location, &new_paths);
-
-        println!("Removed {} entries", num_updated);
     }
 }

@@ -60,8 +60,9 @@ fn main() {
     let args = Cli::parse();
 
     match args.command {
-        Commands::Add { prepend, args: ModifyArgs { system, resolve, preview, paths } } => commands::add(prepend, resolve, if system { util::Location::System } else { util::Location::Local }, preview, paths),
-        Commands::Remove(ModifyArgs { system, resolve, preview, paths }) => commands::remove(resolve, if system { util::Location::System } else { util::Location::Local }, preview, paths),
+        Commands::Add { prepend, args: ModifyArgs { system, resolve, preview, paths } } => commands::modify(commands::Modification::Add { prepend }, resolve, if system { util::Location::System } else { util::Location::Local }, preview, paths),
+        Commands::Remove(ModifyArgs { system, resolve, preview, paths }) => commands::modify(commands::Modification::Remove, resolve, if system { util::Location::System } else { util::Location::Local }, preview, paths),
         Commands::List { quiet, system, local } => commands::list(quiet, if system { commands::ListFrom::System } else if local { commands::ListFrom::Local } else { commands::ListFrom::Merged }),
     }
+
 }
