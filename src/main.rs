@@ -52,7 +52,7 @@ struct ModifyArgs {
     #[arg(long="raw", short='r', help="Adds paths to the environment raw instead of resolving them first.")]
     raw: bool,
 
-    #[arg(long="preview", short='w', help="Prints out a peview of how the path would be changed instead of modifying them. Useful for testing.")]
+    #[arg(long="preview", short='w', help="Simulates a preview of how the path would be changed instead of modifying it. Useful for testing.")]
     preview: bool,
 
     paths: Vec<String>,
