@@ -64,8 +64,7 @@ so if you want to use it as part of a script, make sure to add `-q` to remove in
 
 | Name        | Shortcut | Description                                                                                      |
 | ----------- | -------- | ------------------------------------------------------------------------------------------------ |
-| `--quiet`   | `-q`     | Disables user messages and places each entry on its own line so that the output may be processed
-                           by another program.                                                                              |
+| `--quiet`   | `-q`     | Disables user messages and places each entry on its own line so that the output may be processed by another program.                                                                              |
 | `--system`  | `-s`     | Displays global/system environment variables only.                                               |
 | `--local`   | `-l`     | Displays local user environment variables only.                                                  |
 | `--help`    | `-h`     | Prints the help message for this command                                                         |
