@@ -49,10 +49,10 @@ struct ModifyArgs {
     #[arg(long="system", short='s', help="Modifies global/system environment variables instead of the local user's.")]
     system: bool,
 
-    #[arg(long="raw", short='r', help="Adds raw paths to the environment manually instead of resolving them first.")]
+    #[arg(long="raw", short='r', help="Adds paths to the environment raw instead of resolving them first.")]
     raw: bool,
 
-    #[arg(long="preview", short='v', help="Prints out a peview of how the path would be changed instead of modifying them. Useful for testing.")]
+    #[arg(long="preview", short='w', help="Prints out a peview of how the path would be changed instead of modifying them. Useful for testing.")]
     preview: bool,
 
     paths: Vec<String>,
