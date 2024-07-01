@@ -24,7 +24,7 @@ pub fn load_path_key(location: &Location) -> Vec<String> {
 
     let path_string: String = environment_key.get_value("Path").expect("Unable to read Path value.");
 
-    return path_string.split_terminator(';').map(|s| s.to_owned()).collect();
+    return path_string.split_terminator(';').map(str::to_owned).filter(|x| !x.is_empty()).collect(); // Filter out empty entries
 }
 
 pub fn save_path_key(location: &Location, paths: &Vec<String>) {
@@ -37,7 +37,7 @@ pub fn save_path_key(location: &Location, paths: &Vec<String>) {
         Location::System => RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey_with_flags(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment", KEY_WRITE).expect("Unable to open system environment key."),
     };
 
-    let path_string = paths.join(";");
+    let path_string = paths.join(";") + ";"; // Important trailing semicolon
 
     environment_key.set_value("Path", &path_string).expect("Unable to save path string.");
 }
