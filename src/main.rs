@@ -49,7 +49,7 @@ struct ModifyArgs {
     #[arg(long="system", short='s', help="Modifies global/system environment variables instead of the local user's.")]
     system: bool,
 
-    #[arg(long="raw", short='r', help="Adds paths to the environment raw instead of resolving them first.")]
+    #[arg(long="raw", short='r', help="Adds or removes paths in the environment variable raw/absolutely instead of resolving them first.")]
     raw: bool,
 
     #[arg(long="preview", short='w', help="Simulates a preview of how the path would be changed instead of modifying it. Useful for testing.")]
