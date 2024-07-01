@@ -55,11 +55,11 @@ pub fn list(quiet: bool, location: ListFrom) {
     }
 }
 
-pub fn modify(modification: Modification, resolve: bool, location: Location, preview: bool, paths: Vec<String>) {
+pub fn modify(modification: Modification, raw: bool, location: Location, preview: bool, paths: Vec<String>) {
     let current_paths: Vec<String> = load_path_key(&location);
 
-    // Resolve the paths if requests
-    let paths = if !resolve { paths } else {
+    // Resolve the paths if requested
+    let paths = if raw { paths } else {
         paths.into_iter().map(|path| dunce::canonicalize(path).expect("Path could not be found.").to_str().unwrap().to_owned()).collect()
     };
 

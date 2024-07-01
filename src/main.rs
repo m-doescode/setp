@@ -49,8 +49,8 @@ struct ModifyArgs {
     #[arg(long="system", short='s', help="Modifies global/system environment variables instead of the local user's.")]
     system: bool,
 
-    #[arg(long="resolve", short='r', help="Resolves absolute or relative paths based on the current directory. Will throw an error if the path is invalid.")]
-    resolve: bool,
+    #[arg(long="raw", short='r', help="Adds raw paths to the environment manually instead of resolving them first.")]
+    raw: bool,
 
     #[arg(long="preview", short='v', help="Prints out a peview of how the path would be changed instead of modifying them. Useful for testing.")]
     preview: bool,
@@ -62,8 +62,8 @@ fn main() {
     let args = Cli::parse(); 
 
     match args.command {
-        Commands::Add { prepend, args: ModifyArgs { system, resolve, preview, paths } } => commands::modify(Modification::Add { prepend }, resolve, Location::from_system(system), preview, paths),
-        Commands::Remove(ModifyArgs { system, resolve, preview, paths }) => commands::modify(Modification::Remove, resolve, Location::from_system(system), preview, paths),
+        Commands::Add { prepend, args: ModifyArgs { system, raw, preview, paths } } => commands::modify(Modification::Add { prepend }, raw, Location::from_system(system), preview, paths),
+        Commands::Remove(ModifyArgs { system, raw, preview, paths }) => commands::modify(Modification::Remove, raw, Location::from_system(system), preview, paths),
         Commands::List { quiet, system, local } => commands::list(quiet, ListFrom::from_flags(system, local)),
     }
 }
