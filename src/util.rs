@@ -7,6 +7,15 @@ pub enum Location {
     Local,
 }
 
+impl Location {
+    pub fn from_system(system: bool) -> Self {
+        match system {
+            true => Self::System,
+            false => Self::Local
+        }
+    }
+}
+
 pub fn load_path_key(location: &Location) -> Vec<String> {
     let environment_key = match location {
         Location::Local => RegKey::predef(HKEY_CURRENT_USER).open_subkey(r"Environment").expect("Unable to open local user key."),

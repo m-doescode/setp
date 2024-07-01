@@ -6,6 +6,18 @@ pub enum ListFrom {
     Local,
 }
 
+impl ListFrom {
+    pub fn from_flags(system: bool, local: bool) -> Self {
+        if system && !local {
+            Self::System
+        } else if local && !system {
+            Self::Local
+        } else {
+            Self::Merged
+        }
+    }
+}
+
 pub enum Modification {
     Add {
         prepend: bool

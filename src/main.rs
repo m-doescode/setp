@@ -1,4 +1,6 @@
 use clap::{ Parser, Subcommand, Args };
+use commands::{ ListFrom, Modification };
+use util::Location;
 
 mod util;
 mod commands;
@@ -57,12 +59,11 @@ struct ModifyArgs {
 }
 
 fn main() {
-    let args = Cli::parse();
+    let args = Cli::parse(); 
 
     match args.command {
-        Commands::Add { prepend, args: ModifyArgs { system, resolve, preview, paths } } => commands::modify(commands::Modification::Add { prepend }, resolve, if system { util::Location::System } else { util::Location::Local }, preview, paths),
-        Commands::Remove(ModifyArgs { system, resolve, preview, paths }) => commands::modify(commands::Modification::Remove, resolve, if system { util::Location::System } else { util::Location::Local }, preview, paths),
-        Commands::List { quiet, system, local } => commands::list(quiet, if system { commands::ListFrom::System } else if local { commands::ListFrom::Local } else { commands::ListFrom::Merged }),
+        Commands::Add { prepend, args: ModifyArgs { system, resolve, preview, paths } } => commands::modify(Modification::Add { prepend }, resolve, Location::from_system(system), preview, paths),
+        Commands::Remove(ModifyArgs { system, resolve, preview, paths }) => commands::modify(Modification::Remove, resolve, Location::from_system(system), preview, paths),
+        Commands::List { quiet, system, local } => commands::list(quiet, ListFrom::from_flags(system, local)),
     }
-
 }
