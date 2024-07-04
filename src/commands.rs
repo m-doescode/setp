@@ -90,7 +90,7 @@ pub fn modify(modification: Modification, raw: bool, location: Location, preview
     } else {
         save_path_key(&location, &new_paths);
 
-        let num_updated = usize::abs_diff(paths.len(), new_paths.len());
+        let num_updated = usize::abs_diff(current_paths.len(), new_paths.len());
 
         match modification {
             Modification::Add { .. } => {
